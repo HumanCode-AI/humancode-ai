@@ -1,0 +1,41 @@
+.index-page__links {
+  list-style: none;
+  padding-left: 0;
+}
+
+.index-page__link {
+  font-weight: bold;
+}
+
+.index-page__link + .index-page__link {
+  margin-top: 10px;
+}
+
+.card-bg-container {
+  position: relative;
+  /* box-sizing: border-box; */
+  color: #fff;
+  background: linear-gradient(112.26deg, #3b3e43 -2.56%, #08090b 89.66%);
+}
+
+.card-title {
+  font-family: "DM Mono", monospace;
+}
+.card-title::before {
+    content: "";
+    width: 3.1rem;
+    height: .05667rem;
+    margin-right: .53333rem;
+    background: linear-gradient(270.01deg, #ffffff .01%, rgba(255, 255, 255, 0) 100%);
+}
+.card-title::after {
+    content: "";
+    width: 3.1rem;
+    height: .05667rem;
+    margin-left: .53333rem;
+    background: linear-gradient(-270.01deg, #ffffff .01%, rgba(255, 255, 255, 0) 100%);
+}
+
+.human-id {
+  font-family: "Dhurjati", sans-serif;
+}
