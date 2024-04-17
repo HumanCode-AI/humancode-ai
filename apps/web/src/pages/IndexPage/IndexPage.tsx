@@ -27,6 +27,8 @@ export const IndexPage: FC = () => {
     verifyHumanCode: false,
     claimAirdrop: false
   });
+
+  const [ctxHasAward, setCtxHasAward] = useState(false);
   
   const humanAuthUrl = useMemo(() => {
     return new URL(`${window.location.origin}/api/v1/auth/humancode/mini/login?address=${walletAddress}&initData=${btoa(initDataRaw ?? '')}`, window.location.href).toString();
@@ -44,7 +46,7 @@ export const IndexPage: FC = () => {
   }, [humanAuthUrl]);
 
   const viewInBlockExplorer = useCallback((res: string) => {
-    utils.openLink(`https://testnet.tonviewer.com/transaction/${res}`, false);
+    utils.openLink(`${import.meta.env.VITE_BLOCK_EXPLORER}/transaction/${res}`, false);
   }, [])
 
   const loadProfile = useCallback(() => {
@@ -85,11 +87,7 @@ export const IndexPage: FC = () => {
         viewInBlockExplorer(res);
         reactToast.dismiss(toast);
       }});
-      setProfile({
-        ...profile,
-        hasAward: true,
-        isHuman: false,
-      })
+      setCtxHasAward(true);
     })
     .catch(() => {
       reactToast.update(toast, { render: 'Failed to claim airdrop', type: 'error', isLoading: false, autoClose: 5000 });
@@ -109,19 +107,25 @@ export const IndexPage: FC = () => {
       setProfile({
         id: '',
         isHuman: false,
+        hasAward: false,
       })
+      setCtxHasAward(false);
     }
   }, [walletAddress]);
 
   useEffect(() => {
     if (!viewPort.isExpanded) {
-      viewPort.expand();
+      setTimeout(() => {
+        viewPort.expand();
+      }, 200);
     }
   }, [viewPort])
 
+  const receiveAirdropDisabled = !profile.isHuman || !walletAddress || !profile.hasAward || loading.claimAirdrop || ctxHasAward;
+
   return (
     <>
-      <header style={{ position: 'absolute', right: 20, top: 20}}>
+      <header style={{ position: 'absolute', right: 10, top: 10}}>
         <TonConnectButton/>
       </header>
       <div className={`flex h-screen flex-1 flex-col px-6 lg:px-8 ${window.outerHeight <= 707 ? 'py-5' : 'py-10'}`}>
@@ -151,12 +155,13 @@ export const IndexPage: FC = () => {
           </div>
           <div className="mt-3">
             <HCButton idx={3} 
-                title='Receive airdrop' 
-                titleIcon={<img className='ml-2' src={ton} width={20} height={20} />} 
-                onClick={() => null}
-                disabled={!profile.isHuman || !walletAddress || !profile.hasAward}
-                loading={true}
-                />
+              title='Receive airdrop' 
+              titleIcon={<img className={`ml-2 ${receiveAirdropDisabled ? 'opacity-50' : ''}`} src={ton} width={20} height={20} />} 
+              onClick={claimAirdrop}
+              disabled={receiveAirdropDisabled}
+              finished={ctxHasAward}
+              loading={loading.claimAirdrop}
+            />
           </div>
         </div>
       </div>

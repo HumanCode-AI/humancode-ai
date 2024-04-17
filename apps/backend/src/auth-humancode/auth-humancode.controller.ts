@@ -17,6 +17,8 @@ import { AuthHumancodeService } from './auth-humancode.service';
 import { AuthHumancodeCallbackDto } from './dto/auth-humancode-callback.dto';
 import { AuthService } from 'src/auth/auth.service';
 import { AuthHumancodeMiniLoginQueryDto } from './dto/auth-humancode-mini-login-query.dto';
+import { ConfigService } from '@nestjs/config';
+import { AllConfigType } from 'src/config/config.type';
 
 @ApiTags('Auth')
 @Controller({
@@ -26,18 +28,12 @@ import { AuthHumancodeMiniLoginQueryDto } from './dto/auth-humancode-mini-login-
 export class AuthHumancodeController {
   private readonly logger = new Logger(AuthHumancodeController.name);
 
-  constructor(private readonly authService: AuthService, private readonly authHumancodeService: AuthHumancodeService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly authHumancodeService: AuthHumancodeService,
+    private configService: ConfigService<AllConfigType>,
+  ) {}
 
-  // @ApiBearerAuth()
-  // @UseGuards(AuthGuard('jwt'))
-  // @SerializeOptions({
-  //   groups: ['me'],
-  // })
-  // @Post('bind')
-  // @HttpCode(HttpStatus.NO_CONTENT)
-  // async bind(@Request() request, @Body() body: AuthHumancodeBindAddressDto): Promise<void> {
-  //   return this.authHumancodeService.bindAddress(request.user, body);
-  // }
   @Get('mini/me')
   @HttpCode(HttpStatus.OK)
   async me(@Headers('telegram-init-data') initData: string, @Query('address') address: string): Promise<any> {
@@ -61,30 +57,10 @@ export class AuthHumancodeController {
     };
   }
 
-  // @Get('callback_bak')
-  // @Redirect()
-  // async callback_bak(
-  //   @RealIP() ip: string,
-  //   @Headers('User-Agent') userAgent: string,
-  //   @Query() query: AuthHumancodeCallbackDto,
-  // ) {
-  //   this.logger.log('humancode ai callback', userAgent, JSON.stringify(query));
-  //   const humanId = await this.authHumancodeService.verify(
-  //     query,
-  //     ip,
-  //     userAgent,
-  //   );
-  //   return {
-  //     url: `http://localhost:1000/auth/success/${humanId}`,
-  //   };
-  // }
-
   @Get('callback')
   @Redirect()
   async callback(
     @Res({ passthrough: true }) response: Response,
-    // @RealIP() ip: string,
-    // @Headers('User-Agent') userAgent: string,
     @Query() query: AuthHumancodeCallbackDto,
   ) {
     this.logger.log('humancode ai callback', JSON.stringify(query));
@@ -96,7 +72,9 @@ export class AuthHumancodeController {
     this.logger.log('markAwardEligibility, uid=', jwtRet.user.id);
     await this.authHumancodeService.markAwardEligibility(jwtRet.user.id);
     return {
-      url: 'https://t.me/uhumancodeai_bot/app'
+      url: this.configService.get('telegram.webappLink', {
+        infer: true,
+      })
     }
   }
 }

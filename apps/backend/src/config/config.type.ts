@@ -5,6 +5,7 @@ import { FileConfig } from '../files/config/file-config.type';
 import { MailConfig } from '../mail/config/mail-config.type';
 import { HumanCodeConfig } from '../auth-humancode/config/humancode-config.type';
 import { TelegramConfig } from './telegram-config';
+import { TonConfig } from './ton-config';
 
 export type AllConfigType = {
   app: AppConfig;
@@ -14,4 +15,5 @@ export type AllConfigType = {
   mail: MailConfig;
   humancode: HumanCodeConfig;
   telegram: TelegramConfig;
+  ton: TonConfig;
 };

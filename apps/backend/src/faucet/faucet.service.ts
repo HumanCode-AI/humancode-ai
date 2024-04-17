@@ -1,4 +1,3 @@
-import { HttpService } from '@nestjs/axios';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { BadRequestException, Inject, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
@@ -13,23 +12,23 @@ import { sleep } from 'src/utils/utils';
 import { validate } from 'class-validator';
 import { parse } from '@tma.js/init-data-node';
 
-const RPC_API = 'https://testnet.toncenter.com/api/v2/jsonRPC';
-const API_KEY = '46decbda639902551808878fea335fc85a2bef0f2b2ede8ecb638e2734a85a46';
-const tonweb = new TonWeb(new TonWeb.HttpProvider(RPC_API, { apiKey: API_KEY}));
-// 助记词
-const MNEMONIC = 'soldier quick quiz cement address jeans pen ostrich faith champion stone upon boring shop lend enlist pear ceiling gesture fantasy nerve energy disease dizzy'.split(' ');
-const FAUCET_ADDRESS = 'EQCTuiT5W4qq7Q7evc2h8pnTXfB3Cz0agv2KV0bkLwozSMD9'
-
 @Injectable()
 export class FaucetService {
   private readonly logger = new Logger(FaucetService.name);
 
+  private tonweb: TonWeb;
+
   constructor(
     private configService: ConfigService<AllConfigType>,
-    private readonly httpService: HttpService,
     private readonly userService: UsersService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache
-  ) {}
+  ) {
+    this.tonweb = new TonWeb(new TonWeb.HttpProvider(this.configService.getOrThrow('ton.rpcApi', {
+      infer: true,
+    }), { apiKey: this.configService.getOrThrow('ton.apiKey', {
+      infer: true,
+    })}));
+  }
 
   async take(ip: string, initData: string) {
     const tgUserId = this.verifyInitData(initData);
@@ -83,7 +82,9 @@ export class FaucetService {
 
     // 入库
     await FaucetEntity.create({
-      from: FAUCET_ADDRESS,
+      from: this.configService.getOrThrow('ton.senderAddress', {
+        infer: true,
+      }),
       to: user.address,
       amount: 1,
       currency: 'TON',
@@ -107,14 +108,16 @@ export class FaucetService {
 
   // 发送奖励
   private async sendReward(address: string) {
-    const seed = await mnemonicToSeed(MNEMONIC)
+    const seed = await mnemonicToSeed(this.configService.getOrThrow('ton.senderMnemonic', {
+      infer: true,
+    }).split(' '))
     this.logger.log('seed Hex: ', TonWeb.utils.bytesToHex(seed));
     
     // 密钥对
     const keyPair = TonWeb.utils.nacl.sign.keyPair.fromSeed(seed);
     // 使用v4R2
-    const WalletClass = tonweb.wallet.all['v3R2'];
-    const wallet = new WalletClass(tonweb.provider, {
+    const WalletClass = this.tonweb.wallet.all['v3R2'];
+    const wallet = new WalletClass(this.tonweb.provider, {
         publicKey: keyPair.publicKey,
         wc: 0
     });
@@ -161,7 +164,7 @@ export class FaucetService {
   }
 
   private async getLastTransaction(walletAddress: string) {
-    const transactions = await tonweb.getTransactions(walletAddress, 1);
+    const transactions = await this.tonweb.getTransactions(walletAddress, 1);
     if (transactions instanceof Array) {
       const result = {
         trade: transactions[0],

@@ -3,9 +3,9 @@ import {
   // useBackButtonIntegration,
   useNavigatorIntegration,
 } from '@tma.js/react-router-integration';
-// import { useBackButton } from '@tma.js/sdk-react';
+import { useMiniApp } from '@tma.js/sdk-react';
 import type { FC } from 'react';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import {
   Navigate,
   Route,
@@ -30,6 +30,11 @@ export const App: FC = () => {
   // const backButton = useBackButton();
 
   // useBackButtonIntegration(tmaNavigator, backButton);
+  const miniApp = useMiniApp();
+
+  useEffect(() => {
+    miniApp.ready();
+  }, []);
 
   return (
     <Router location={location} navigator={navigator}>

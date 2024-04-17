@@ -24,7 +24,7 @@ const HCIdCard: React.FC<HCIdCardProps> = React.memo(({
   return (
     <div className="flex my-10 relative text-white bg-[linear-gradient(180deg,_#212120_-2.56%,_#313130_89.66%)] rounded-2xl h-56">
       <img src={logo} 
-        className={`transition-transform duration-400 ${code ? '-translate-x-24' : 'translate-x-0'}`}
+        className={`transition-transform duration-500 ${code ? '-translate-x-24' : 'translate-x-0'}`}
         style={{ position: 'absolute', zIndex: 1, top: 0, left: 0, right: 0, bottom: 0, margin: 'auto'}} />
       <img src={earth} style={{ maxWidth: '100%', height: 'auto', objectFit: 'cover'}} />
       <div

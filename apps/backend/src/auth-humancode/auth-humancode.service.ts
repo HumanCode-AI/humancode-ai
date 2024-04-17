@@ -23,7 +23,6 @@ export class AuthHumancodeService {
   constructor(
     private configService: ConfigService<AllConfigType>,
     private readonly httpService: HttpService,
-    // private readonly sessionService: SessionService,
     private readonly userService: UsersService,
     private readonly faucetService: FaucetService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache
@@ -61,52 +60,6 @@ export class AuthHumancodeService {
     this.logger.log(`authUrl: ${url}`);
     return url;
   }
-
-  // async verify(query: AuthHumancodeCallbackDto, ip: string, userAgent: string) {
-  //   const body = {
-  //     session_id: query.session_id,
-  //     vcode: query.vcode,
-  //     timestamp: String(new Date().getTime()),
-  //     nonce_str: nanoid(16),
-  //   };
-
-  //   const url = this.wrapApiUrl('api/vcode/v2/verify', body);
-  //   const { data } = await firstValueFrom(
-  //     this.httpService.post(url, body).pipe(
-  //       catchError((error: AxiosError) => {
-  //         this.logger.error(error);
-  //         throw 'An error happened!';
-  //       }),
-  //     ),
-  //   );
-  //   this.logger.log(data);
-  //   if (data.code === 0) {
-  //     const { human_id } = data.result;
-
-  //     let user = await HumancodeUserEntity.findOne({
-  //       where: { humanCode: human_id },
-  //     });
-
-  //     const address = await this.cacheManager.get<string>(query.session_id);
-
-  //     if (!user) {
-  //       user = new HumancodeUserEntity();
-  //       user.humanCode = human_id;
-  //       user.address = address;
-  //       user.regIp = ip;
-  //       user.source = userAgent || 'humancode';
-  //       await user.save();
-  //     } else {
-  //       user.address = address;
-  //       user.lastLoginIp = ip;
-  //       user.lastLoginTime = new Date();
-  //       await user.save();
-  //     }
-
-  //     return human_id;
-  //   }
-  //   throw 'An error happened!';
-  // }
 
   async getProfileByToken(query: AuthHumancodeCallbackDto): Promise<SocialInterface> {
     const body = {

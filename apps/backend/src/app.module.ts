@@ -31,6 +31,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { RedisOptions } from './config/redis-config';
 import telegramConfig from './config/telegram-config';
 import { FaucetModule } from './faucet/faucet.module';
+import tonConfig from './config/ton-config';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { FaucetModule } from './faucet/faucet.module';
         redisConfig,
         humancodeConfig,
         telegramConfig,
+        tonConfig,
       ],
       envFilePath: ['.env'],
     }),

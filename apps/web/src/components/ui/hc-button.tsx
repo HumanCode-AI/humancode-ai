@@ -3,7 +3,7 @@ import * as React from "react"
 import { Button } from "./button"
 
 import finishedIcon from '../../assets/finished.png'
-import { ReloadIcon } from "@radix-ui/react-icons"
+// import { UpdateIcon } from "@radix-ui/react-icons"
 
 
 export interface HCButtonProps {
@@ -29,7 +29,7 @@ const HCButton: React.FC<HCButtonProps> = React.memo(({
     <div>
       <Button size={'lg'} className={`w-full ${loading ? 'justify-center' : 'justify-between' }`} disabled={disabled} onClick={onClick}>
         {loading ? (
-          <div className="flex flex-row justify-center items-center self-center"><ReloadIcon className='mr-2 animate-spin'/> <span>Loading...</span></div>
+          <div className="flex flex-row justify-center items-center self-center"><span>Loading...</span></div>
         ): (
           <>
             <div className={`w-5 h-5 rounded-full border border-white text-white text-center font-bold flex justify-center items-center ${disabled ? 'opacity-50' : ''}`}>{idx}</div>

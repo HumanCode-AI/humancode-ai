@@ -3,7 +3,6 @@ import { DisplayGate, SDKProvider } from '@tma.js/sdk-react';
 import { THEME, TonConnectUIProvider } from '@tonconnect/ui-react';
 import type { FC } from 'react';
 import { useEffect, useMemo } from 'react';
-// import { Toaster } from 'react-hot-toast';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { App } from '../App';
@@ -25,7 +24,7 @@ const Err: FC<{ error: unknown }> = ({ error }) => {
 
 const Loading: FC = () => {
   return (
-    <div>Application is loading</div>
+    <div className='flex flex-col justify-center items-center justify-self-center'>Application is loading</div>
   );
 };
 
@@ -43,19 +42,17 @@ export const Root: FC = () => {
     <TonConnectUIProvider 
       manifestUrl={manifestUrl}
       uiPreferences={{ theme: THEME.DARK }}
-      actionsConfiguration={{ twaReturnUrl: 'https://t.me/uhumancodeai_bot/app' }}
+      actionsConfiguration={{ twaReturnUrl: import.meta.env.VITE_TELEGRAM_WEBAPP_LINK }}
     >
       <SDKProvider options={{ acceptCustomStyles: true, cssVars: true, complete: true }}>
         <DisplayGate error={Err} loading={Loading} initial={Loading}>
           <App />
-          {/* <Toaster/> */}
           <ToastContainer
             position="top-center"
             bodyStyle={{ justifyContent: 'center' }}
             autoClose={10000}
             hideProgressBar={false}
             newestOnTop={false}
-            // closeOnClick
             rtl={false}
             pauseOnFocusLoss
             draggable
