@@ -1,0 +1,24 @@
+services:
+  postgres:
+    image: postgres:16.2-alpine
+    ports:
+      - 15432:5432
+    volumes:
+      - humancodeai-db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+  redis:
+    image: redis:7-alpine
+    ports:
+      - 16379:6379
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - ${APP_PORT}:${APP_PORT}
+
+volumes:
+  humancodeai-db:
